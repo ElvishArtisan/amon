@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=AudioVideo;Player;
+Encoding=UTF-8
+Name=AMon Player
+GenericName=Audio Monitor
+Exec=amonplayer
+Icon=amon
+Path=
+Type=Application
+Terminal=false

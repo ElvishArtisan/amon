@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=AudioVideo;
+Encoding=UTF-8
+Name=AMon
+GenericName=Broadcast Delay Control
+Exec=amon
+Icon=amon
+Path=
+Type=Application
+Terminal=false

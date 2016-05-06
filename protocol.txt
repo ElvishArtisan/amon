@@ -1,0 +1,62 @@
+This is the TCP network data protocol for the AMon system.
+
+PORT
+----
+Connections are made to TCP port 7007.  
+
+
+HIGH-LEVEL DATA FORMAT
+----------------------
+Each data message has the following high-level format:
+
+<AA> <payload-len> <verb> <data> [..] <check-sum>
+
+where:
+
+<AA> - The 0xAA byte (ASCII 'x').
+
+<payload-len> - Count of number of bytes comprising the <verb> + <data> bytes.
+
+<verb> - A single-byte value indicating the type of message.
+
+<data> - Zero or more bytes of type-specific data.
+
+<check-sum> - A single-byte check sum consisting of the eight least
+              significant bits of the sum of <verb> and <data> bytes.
+
+
+MESSAGE TYPES
+-------------
+
+<01> - Stereo Channel Data
+
+Contains a full set of level data for a stereo audio channel.  Structured as
+follows:
+
+<01> <status> <left-lvl> <right-lvl> <sum-lvel> <diff-lvl>
+
+where:
+
+       <01> - The 0x01 byte (ASCII SOH)
+
+  <channel> - Channel number, single byte
+
+ <left-lvl> - The audio level of the left channel, sent as a thirty-two bit
+              signed integer in network byte order.
+
+<right-lvl> - The audio level of the right channel, sent as a thirty-two bit
+              signed integer in network byte order.
+
+  <sum-lvl> - The audio level of the sum of the left and right channels, sent
+              as a thirty-two bit signed integer in network byte order.
+
+ <diff-lvl> - The audio level of the difference of the left and right 
+              channels, sent as a thirty-two bit signed integer in network 
+              byte order.
+
+   <status> - Single byte of status and alarm data, structured as followed:
+		 Bit 0: low level alarm
+		 Bit 1: high level alarm
+		 Bit 2: high L-R alarm
+
+

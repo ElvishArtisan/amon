@@ -1,0 +1,40 @@
+This is the installation file for the AMon package.
+
+PREREQUISITES
+In order to build AMon, you will need the following
+
+Qt ToolKit, v3.2.x or later
+
+ALSA, v1.0.0 or later
+
+
+BUILDING THE SOFTWARE
+After unpacking the tar archive and cd'ing to the top directory, simply do:
+
+./configure
+make
+make install
+
+(The 'make install' step must be done as root).
+
+
+CONFIGURATION
+Two configuration files are necessary for the proper operation of AMon,
+samples of which can be found in the top directory of the source tree.  The
+'alsa.conf-sample' file shows the format of entries required to get one or
+more sound cards to be recognized by amond(8).  These entries should go in the
+'.asoundrc' file of the account that runs the daemon (normally 'root').  The
+'amon.conf-sample' file should be copied to '/etc/amon.conf'.  This file
+describes the layout of meters and other screen widgets used by the amon(1)
+display program.
+
+
+STARTUP
+Once configured, the amond(8) daemon can be started by doing (as root):
+
+     /etc/init.d/amond start
+
+The amon(1) screen display program can be started simply by doing:
+
+    amon
+

@@ -1,0 +1,12 @@
+This is the README file for the AMon package.
+
+AMon is a system for monitoring and display audio levels.  It consists of two
+parts:  the amond(8) audio monitoring daemon, which is normally configured to
+start automatically at the time of system startup, and the amon(1) display
+application, which provides a customizable, GUI-based display of level
+parameters.  Amon(1) can display level data from amond(8) instance located
+either on the local machine, or on remote machines by means of TCP/IP
+networked connections.
+
+Instructions for building, installing and configuring AMon can be found in the
+'INSTALL' file.

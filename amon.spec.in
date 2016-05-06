@@ -1,0 +1,146 @@
+## amon.spec.in
+##
+##    The Amon Audio Monitoring System
+##    Copyright (C) 2002-2007  Fred Gleason <fredg@paravelsystems.com>
+##
+##      $Id: amon.spec.in,v 1.8 2011/08/17 14:46:54 pcvs Exp $
+##
+##    This program is free software; you can redistribute it and/or modify
+##    it under the terms of version 2 of the GNU General Public License as
+##    published by the Free Software Foundation;
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with this program; if not, write to the Free Software
+##    Foundation, Inc., 59 Temple Place, Suite 330, 
+##    Boston, MA  02111-1307  USA
+##
+
+Summary: System for Monitoring Audio Levels
+Name: amon
+Version: @VERSION@
+Release: @RPM_RELEASE@
+License: GPL
+Packager: Fred Gleason <fredg@paravelsystems.com>
+Group: Productivity/Multimedia/Other
+Source: ftp://ftp.paravelsystems.com/pub/srlabs/amon/amon-@VERSION@.tar.gz
+BuildRoot: /var/tmp/amon-@VERSION@
+
+
+%description
+AMon is a system for the remote monitoring of audio levels.
+
+
+%prep
+
+
+%setup
+
+
+%build
+./configure --prefix=@LOCAL_PREFIX@
+make
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/@LOCAL_PREFIX@/lib
+cp lib/.libs/libamon-@VERSION@.so $RPM_BUILD_ROOT@LOCAL_PREFIX@/lib/
+ln -s @LOCAL_PREFIX@/lib/libamon-@VERSION@.so $RPM_BUILD_ROOT/@LOCAL_PREFIX@/lib/libamon.so
+cp lib/.libs/libamon.a $RPM_BUILD_ROOT@LOCAL_PREFIX@/lib/
+cp lib/.libs/libamon.la $RPM_BUILD_ROOT@LOCAL_PREFIX@/lib/
+mkdir -p $RPM_BUILD_ROOT@LOCAL_PREFIX@/bin
+cp amon/.libs/amon $RPM_BUILD_ROOT@LOCAL_PREFIX@/bin/
+cp amonplayer/.libs/amonplayer $RPM_BUILD_ROOT@LOCAL_PREFIX@/bin/
+mkdir -p $RPM_BUILD_ROOT@LOCAL_PREFIX@/sbin
+cp amond/.libs/amond $RPM_BUILD_ROOT@LOCAL_PREFIX@/sbin/
+mkdir -p $RPM_BUILD_ROOT/etc/init.d
+cp rc.amond $RPM_BUILD_ROOT/etc/init.d/amond
+mkdir -p $RPM_BUILD_ROOT/usr/share/applications
+cp xdg/amon.desktop $RPM_BUILD_ROOT/usr/share/applications/
+cp xdg/amonplayer.desktop $RPM_BUILD_ROOT/usr/share/applications/
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps
+cp icons/amon-22x22.xpm $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps/amon.xpm
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
+cp icons/amon-32x32.xpm $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps/amon.xpm
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
+cp icons/amon-16x16.xpm $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps/amon.xpm
+
+
+%post
+ldconfig
+if test "@DISTRO@" = "suse" ; then
+  PACKAGE_DOC_DIR=%_docdir/%{name}
+fi
+if test "@DISTRO@" = "redhat" ; then
+  PACKAGE_DOC_DIR=%_docdir/%{name}-@VERSION@
+fi
+if test ! -e /etc/amond.conf ; then
+  cp $PACKAGE_DOC_DIR/amond.conf-sample /etc/amond.conf
+fi
+if test ! -e /etc/amon.conf ; then
+  cp $PACKAGE_DOC_DIR/amon.conf-sample /etc/amon.conf
+fi
+/etc/init.d/amond start
+if test "@DISTRO@" = "suse" ; then
+  insserv -d -f /etc/init.d/amond
+fi
+if test "@DISTRO@" = "redhat" ; then
+  chkconfig --add amond
+  chkconfig --level 345 amond on
+fi
+
+%preun
+if test "$1" = "0" ; then
+  /etc/init.d/amond stop
+  if test "@DISTRO@" = "suse" ; then
+    insserv -r -d -f /etc/init.d/amond
+  fi
+  if test "@DISTRO@" = "redhat" ; then
+    chkconfig --level 345 amond off
+    chkconfig --del amond
+  fi
+fi
+exit 0
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root)
+@LOCAL_PREFIX@/lib/libamon-@VERSION@.so
+@LOCAL_PREFIX@/lib/libamon.a
+@LOCAL_PREFIX@/lib/libamon.la
+@LOCAL_PREFIX@/lib/libamon.so
+%attr(4755,root,root) @LOCAL_PREFIX@/bin/amon
+@LOCAL_PREFIX@/bin/amonplayer
+@LOCAL_PREFIX@/sbin/amond
+/etc/init.d/amond
+/usr/share/icons/hicolor/22x22/apps/amon.xpm
+/usr/share/icons/hicolor/32x32/apps/amon.xpm
+/usr/share/icons/hicolor/16x16/apps/amon.xpm
+/usr/share/applications/amon.desktop
+/usr/share/applications/amonplayer.desktop
+%doc ChangeLog
+%doc COPYING 
+%doc INSTALL 
+%doc README 
+%doc amon.conf-sample
+%doc amond.conf-sample
+
+
+%changelog
+* Wed Aug 17 2011 Fred Gleason <fredg@paravelsystems.com>
+-- Moved icon resources from /opt/kde3 to /usr/share.
+* Wed Aug 03 2011 Fred Gleason <fredg@paravelsystems.com>
+-- Added a post-install rule for configuration files.
+* Sun Aug 26 2007 Fred Gleason <fredg@paravelsystems.com>
+-- Added 'amonplayer'.
+* Mon Apr 02 2007 Fred Gleason <fredg@paravelsystems.com>
+-- Initial spec file creation.

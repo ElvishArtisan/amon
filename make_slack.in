@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# make_slack
+#
+# Make a Slackware package.
+#
+# (C) Copyright 2006,2008 Fred Gleason <fredg@paravelsystems.com>
+#
+#      $Id: make_slack.in,v 1.2 2008/03/04 02:08:25 cvs Exp $
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of version 2 of the GNU General Public License as
+#    published by the Free Software Foundation;
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, 
+#    Boston, MA  02111-1307  USA
+#
+
+#
+# USAGE
+#    make_slack
+#
+
+#
+# Clean the build tree
+#
+BUILD_DIR=/var/tmp/amon-@VERSION@
+rm -rf $BUILD_DIR
+
+#
+# Build the package tree
+#
+rm -rf $BUILD_DIR
+mkdir -p $BUILD_DIR/@LOCAL_PREFIX@/lib
+cp lib/.libs/libamon-@VERSION@.so $BUILD_DIR@LOCAL_PREFIX@/lib/
+ln -s @LOCAL_PREFIX@/lib/libamon-@VERSION@.so $BUILD_DIR/@LOCAL_PREFIX@/lib/libamon.so
+cp lib/.libs/libamon.a $BUILD_DIR@LOCAL_PREFIX@/lib/
+cp lib/.libs/libamon.la $BUILD_DIR@LOCAL_PREFIX@/lib/
+mkdir -p $BUILD_DIR@LOCAL_PREFIX@/bin
+cp amon/.libs/amon $BUILD_DIR@LOCAL_PREFIX@/bin/
+cp amonplayer/.libs/amonplayer $BUILD_DIR@LOCAL_PREFIX@/bin/
+mkdir -p $BUILD_DIR@LOCAL_PREFIX@/sbin
+cp amond/.libs/amond $BUILD_DIR@LOCAL_PREFIX@/sbin/
+mkdir -p $BUILD_DIR/usr/doc/amon-@VERSION@
+cp amon.conf-sample $BUILD_DIR/usr/doc/amon-@VERSION@/
+cp amond.conf-sample $BUILD_DIR/usr/doc/amon-@VERSION@/
+cp COPYING $BUILD_DIR/usr/doc/amon-@VERSION@/
+cp INSTALL $BUILD_DIR/usr/doc/amon-@VERSION@/
+cp README $BUILD_DIR/usr/doc/amon-@VERSION@/
+cp protocol.txt $BUILD_DIR/usr/doc/amon-@VERSION@/
+mkdir -p $BUILD_DIR/etc/rc.d
+cp rc.amond.slackware $BUILD_DIR/etc/rc.d/rc.amond
+mkdir -p $BUILD_DIR/usr/share/applications
+cp xdg/amon.desktop $BUILD_DIR/usr/share/applications/
+cp xdg/amonplayer.desktop $BUILD_DIR/usr/share/applications/
+mkdir -p $BUILD_DIR/usr/share/icons/hicolor/22x22/apps
+cp icons/amon-22x22.xpm $BUILD_DIR/usr/share/icons/hicolor/22x22/apps/amon.xpm
+mkdir -p $BUILD_DIR/usr/share/icons/hicolor/32x32/apps
+cp icons/amon-32x32.xpm $BUILD_DIR/usr/share/icons/hicolor/32x32/apps/amon.xpm
+mkdir -p $BUILD_DIR/usr/share/icons/hicolor/48x48/apps
+cp icons/amon-48x48.xpm $BUILD_DIR/usr/share/icons/hicolor/48x48/apps/amon.xpm
+mkdir -p $BUILD_DIR/install
+cp slack-desc $BUILD_DIR/install/
+cp slack_doinst.sh $BUILD_DIR/install/
+
+#
+# Generate the package
+#
+SOURCE_DIR=`pwd`
+cd $BUILD_DIR
+makepkg --prepend --linkadd y --chown n amon.tgz
+cd $SOURCE_DIR
+cp $BUILD_DIR/amon.tgz ./amon-@VERSION@-i586-@RPM_RELEASE@.tgz
+
+#
+# Clean up and exit
+#
+rm -r $BUILD_DIR
+
+
+# End of make_slack
